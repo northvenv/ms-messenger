@@ -37,9 +37,9 @@ class UserHashedPassword(BaseValueObject[str]): ...
 
 
 @dataclass(frozen=True)
-class UserPhoneNumber(BaseValueObject[str]): 
-    _PATTERN = r'^\+7\d{10}$'
+class UserPhoneNumber(BaseValueObject[int]): 
+    _PATTERN = r'^7\d{10}$'
 
     def _validate(self):
-        if not re.fullmatch(pattern=self._PATTERN, string=self.value):
+        if not re.fullmatch(pattern=self._PATTERN, string=str(self.value)):
             raise InvalidPhoneNumberError

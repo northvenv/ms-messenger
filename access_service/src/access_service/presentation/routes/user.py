@@ -36,7 +36,6 @@ async def create_user(
     data: CreateUserSchema,
     create_user_action: CreateUser = Depends(Provide[ApplicationContainer.create_user]),
 ) -> UserDTO:
-    print(f"create_user_action type: {type(create_user_action)}")
     response = await create_user_action(
         CreateUserInputDTO(
             username=data.username,

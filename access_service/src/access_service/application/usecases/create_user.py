@@ -20,7 +20,7 @@ from access_service.application.common.services.password_hasher import PasswordH
 @dataclass(frozen=True)
 class CreateUserInputDTO(): 
     username: str
-    phone_number: str
+    phone_number: int
     password: str
 
 

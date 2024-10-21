@@ -19,7 +19,3 @@ RUN poetry install --no-dev
 COPY . /app/
 
 ENV PYTHONPATH=/app/src
-
-# RUN chmod +x /entrypoint.sh
-
-# ENTRYPOINT ["/entrypoint.sh"]

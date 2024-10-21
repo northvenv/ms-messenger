@@ -36,7 +36,7 @@ from access_service.application.exceptions.user import (
 
 @dataclass(frozen=True)
 class AuthorizeInputDTO():
-    phone_number: str
+    phone_number: int
     password: str
 
 
