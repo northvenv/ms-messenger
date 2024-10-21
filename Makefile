@@ -23,7 +23,7 @@ app-down:
 
 .PHONY: storage-down
 storage-down:
-	${DC} -f ${STORAGE_FILE} down
+	${DC} -f ${STORAGE_FILE} --env-file ${ENV} down
 
 .PHONY: app-logs
 app-logs:
