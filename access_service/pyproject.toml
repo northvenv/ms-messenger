@@ -19,6 +19,9 @@ uvicorn = "^0.32.0"
 asyncpg = "^0.29.0"
 ruff = "^0.7.0"
 pyjwt = "^2.9.0"
+aiokafka = "^0.11.0"
+redis-async-client = "^0.1.7"
+orjson = "^3.10.10"
 
 
 [build-system]

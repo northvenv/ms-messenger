@@ -1,13 +1,12 @@
 from datetime import datetime, UTC
-from access_service.domain.common.values.timed_token import ExpiresIn
 
-from access_service.application.common.usecase.interactor import Interactor
-from access_service.application.dto.refresh_token import RefreshTokenDTO
-from access_service.application.dto.access_token import AccessTokenDTO
+from access_service.domain.common.values.timed_token import ExpiresIn
 from access_service.domain.common.entities.config import (
     AccessTokenConfig,
 )
-
+from access_service.application.common.usecase.interactor import Interactor
+from access_service.application.dto.refresh_token import RefreshTokenDTO
+from access_service.application.dto.access_token import AccessTokenDTO
 
 
 class UpdateAccessToken(Interactor[RefreshTokenDTO, AccessTokenDTO]):

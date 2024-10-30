@@ -6,6 +6,7 @@ from access_service.domain.values.user import (
     UserHashedPassword,
     UserPhoneNumber,
 )
+from access_service.domain.exceptions.user import UserIsNotActiveError
 
 
 @dataclass
@@ -14,21 +15,14 @@ class User:
     username: UserName
     hashed_password: UserHashedPassword
     phone_number: UserPhoneNumber
-
-    @classmethod
-    def create_user(
-        cls,
-        user_id: UserID,
-        username: UserName,
-        phone_number: UserPhoneNumber,
-        hashed_password: UserHashedPassword,
-    ) -> "User":
-        return cls(
-            user_id=user_id, 
-            username=username, 
-            phone_number=phone_number,
-            hashed_password=hashed_password, 
-        )
+    is_active: bool = False
+    
+    def verify_is_active(self) -> None:
+        if not self.is_active:
+            raise UserIsNotActiveError
+    
+    def _activate(self) -> None:
+        self.is_active = True
     
     def __str__(self) -> str:
         return self.user_id

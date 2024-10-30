@@ -6,6 +6,12 @@ from datetime import timedelta
 class AccessTokenConfig:
     expires_after: timedelta
 
+
 @dataclass(frozen=True)
 class RefreshTokenConfig:
+    expires_after: timedelta
+
+
+@dataclass(frozen=True)
+class VerificationTokenConfig:
     expires_after: timedelta

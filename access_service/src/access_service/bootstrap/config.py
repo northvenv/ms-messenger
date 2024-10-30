@@ -11,9 +11,12 @@ from access_service.infrastructure.persistence.config import DBConfig
 from access_service.domain.common.entities.config import (
     AccessTokenConfig,
     RefreshTokenConfig,
+    VerificationTokenConfig
 )
 from access_service.infrastructure.services.web_token.config import JWTConfig
 from access_service.presentation.auth.config import TokenAuthConfig
+from access_service.infrastructure.cache.config import RedisConfig
+from access_service.infrastructure.producer.config import KafkaConfig
 
 
 def load_config_by_path(config_path: Path) -> dict[str, Any]:
@@ -27,7 +30,10 @@ class AccessServiceConfig:
     jwt: JWTConfig
     token_auth: TokenAuthConfig
     access_token: AccessTokenConfig
+    verification_token: VerificationTokenConfig
     refresh_token: RefreshTokenConfig
+    redis: RedisConfig
+    kafka: KafkaConfig
 
 
 def load_access_service_config() -> AccessServiceConfig:
@@ -49,6 +55,7 @@ def load_access_service_config() -> AccessServiceConfig:
         jwt_algorithm = cfg["security"]["algorithm"]
         access_token_expires_after = cfg["security"]["access-token-expires-minutes"]
         refresh_token_expires_after = cfg["security"]["refresh-token-expires-days"]
+        verification_token_expires_after = cfg["verification"]["verification-token-expires-minutes"]
     except KeyError:
         logging.fatal("On startup: Error reading config %s", cfg_path)
         raise
@@ -64,9 +71,19 @@ def load_access_service_config() -> AccessServiceConfig:
     refresh_token = RefreshTokenConfig(
         expires_after=timedelta(refresh_token_expires_after),
     )
+    verification_token = VerificationTokenConfig(
+        expires_after=timedelta(verification_token_expires_after),
+    )
     token_auth = TokenAuthConfig(
         access_token_cookie_key=access_token_key,
         refresh_token_cookie_key=refresh_token_key,
+    )
+    redis = RedisConfig(
+        host=os.environ["REDIS_HOST"],
+        port=int(os.environ["REDIS_PORT"])
+    )
+    kafka = KafkaConfig(
+        kafka_url=os.environ["KAFKA_URL"]
     )
 
     return AccessServiceConfig(
@@ -74,5 +91,8 @@ def load_access_service_config() -> AccessServiceConfig:
         jwt=jwt,
         access_token=access_token,
         refresh_token=refresh_token,
+        verification_token=verification_token,
         token_auth=token_auth,
+        redis=redis,
+        kafka=kafka,
     )

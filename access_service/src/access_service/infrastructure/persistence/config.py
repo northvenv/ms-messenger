@@ -6,13 +6,13 @@ from dataclasses import dataclass
 class BaseDBConfig:
 
     host: str
-    port: str
+    port: int
     db_name: str
     user: str
     password: str
 
     def get_connection_url(self) -> str:
-        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}/{self.db_name}"
+        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.db_name}"
     
     
 @dataclass

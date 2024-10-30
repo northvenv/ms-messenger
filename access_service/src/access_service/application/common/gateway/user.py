@@ -7,7 +7,7 @@ from access_service.domain.values.user import UserPhoneNumber
 from access_service.application.dto.user import UserDTO
 
 
-class UserRepository(Protocol):
+class UserGateway(Protocol):
     @abstractmethod
     async def save(self, user: User) -> UserDTO:
         ...

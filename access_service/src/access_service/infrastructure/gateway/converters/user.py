@@ -10,7 +10,6 @@ from access_service.domain.values.user import (
 )
 
 
-# @provider
 def convert_user_entity_to_db_user(user: User) -> DBUser:
     return DBUser(
         user_id=user.user_id.to_raw(),
@@ -19,7 +18,7 @@ def convert_user_entity_to_db_user(user: User) -> DBUser:
         hashed_password=user.hashed_password.to_raw(),
     )
 
-# @provider
+
 def convert_db_user_to_user_entity(db_user: DBUser) -> User:
     return User(
         user_id=UserID(db_user.user_id),
@@ -28,22 +27,12 @@ def convert_db_user_to_user_entity(db_user: DBUser) -> User:
         hashed_password=UserHashedPassword(db_user.hashed_password),
     )
 
-# convert_user_entity_to_db_user = get_converter(
-#     User,
-#     DBUser,
-# )
 
-# convert_db_user_to_user_entity = get_converter(
-#     DBUser,
-#     User,
-# )
-
-# @provider
 def convert_db_user_to_dto(db_user: DBUser) -> UserDTO:
     return UserDTO(
         user_id=db_user.user_id,
     )
 
-# convert_db_user_to_dto = get_converter(DBUser, UserDTO)
+
 
 

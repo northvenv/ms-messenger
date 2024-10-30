@@ -10,13 +10,12 @@ from access_service.application.usecases.authorize import (
     Authorize,
     AuthorizeInputDTO,
 )
+from access_service.application.usecases.send_verification_token import (
+    SendVerificationToken,
+    SendVerificationTokenInputDTO,
+)
 from access_service.application.usecases.update_access_token import UpdateAccessToken
 from access_service.application.dto.user import UserDTO
-
-from access_service.bootstrap.di import (
-    ApplicationContainer,
-    PresentationContainer,
-)
 
 from access_service.presentation.schemas.user import (
     CreateUserSchema,
@@ -24,24 +23,36 @@ from access_service.presentation.schemas.user import (
 )
 from access_service.presentation.auth.token_auth import TokenAuth
 
+from access_service.bootstrap.di import (
+    ApplicationContainer,
+    PresentationContainer,
+)
+
 
 router = APIRouter(
     prefix="/auth",
     tags=["Auth"],
 )
 
+
 @router.post("/signup")
 @inject
 async def create_user(
     data: CreateUserSchema,
-    create_user_action: CreateUser = Depends(Provide[ApplicationContainer.create_user]),
+    create_user: CreateUser = Depends(Provide[ApplicationContainer.create_user]),
+    send_verification_token: SendVerificationToken = Depends(Provide[ApplicationContainer.send_verification_token])
 ) -> UserDTO:
-    response = await create_user_action(
+    response = await create_user(
         CreateUserInputDTO(
             username=data.username,
             phone_number=data.phone_number,
             password=data.password,
         ),
+    )
+    await send_verification_token(
+        SendVerificationTokenInputDTO(
+            user_id=response.user_id,
+        )
     )
     return response
 
@@ -72,12 +83,12 @@ async def login_user(
 @inject
 async def refresh_token(
     request: Request,
-    update_access_token_action: UpdateAccessToken = Depends(Provide[ApplicationContainer.update_access_token]),
+    update_access_token: UpdateAccessToken = Depends(Provide[ApplicationContainer.update_access_token]),
     token_auth: TokenAuth = Depends(Provide[PresentationContainer.token_auth]),
 ) -> Response:
     refresh_token = token_auth.get_refresh_token(request)
 
-    access_token = await update_access_token_action(refresh_token)
+    access_token = await update_access_token(refresh_token)
 
     http_response = JSONResponse(status_code=201, content={})
 

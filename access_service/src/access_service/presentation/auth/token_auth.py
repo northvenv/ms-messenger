@@ -11,9 +11,6 @@ from access_service.application.dto.refresh_token import RefreshTokenDTO
 from access_service.presentation.auth.config import TokenAuthConfig
 
 
-
-
-
 class TokenAuth:
     def __init__(
         self,

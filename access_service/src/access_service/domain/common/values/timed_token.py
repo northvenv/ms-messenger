@@ -1,6 +1,6 @@
-from datetime import datetime, UTC
 from uuid import UUID
 from dataclasses import dataclass
+from datetime import datetime, UTC
 
 from access_service.domain.common.values.base import BaseValueObject
 

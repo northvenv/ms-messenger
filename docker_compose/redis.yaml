@@ -1,0 +1,8 @@
+services:
+  redis:
+    container_name: messenger_redis
+    image: redis:alpine
+    env_file:
+      - ../.env
+    ports:
+    - "${REDIS_PORT}:${REDIS_PORT}"

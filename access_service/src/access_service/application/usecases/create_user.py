@@ -13,7 +13,7 @@ from access_service.application.dto.user import (
     UserDTO,
 )
 from access_service.application.common.usecase.interactor import Interactor
-from access_service.application.common.repository.user import UserRepository
+from access_service.application.common.gateway.user import UserGateway
 from access_service.application.common.services.password_hasher import PasswordHasher
 
 
@@ -27,10 +27,10 @@ class CreateUserInputDTO():
 class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
     def __init__(
         self,
-        user_repository: UserRepository,
+        user_gateway: UserGateway,
         password_hasher: PasswordHasher
     ): 
-        self.user_repository: UserRepository = user_repository
+        self.user_gateway: UserGateway = user_gateway
         self.password_hasher: PasswordHasher[UserRawPassword, UserHashedPassword] = password_hasher
 
     async def __call__(self, data: CreateUserInputDTO) -> UserDTO:
@@ -41,14 +41,14 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
             UserRawPassword(data.password)
         )
 
-        user = User.create_user(
+        user = User(
             user_id=user_id,
             username=username,
             phone_number=phone_number,
             hashed_password=hashed_password,
         )
 
-        user_dto = await self.user_repository.save(user)
+        user_dto = await self.user_gateway.save(user)
         
         return user_dto
 

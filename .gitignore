@@ -129,6 +129,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.env.access_service
+
 
 # Spyder project settings
 .spyderproject
@@ -165,3 +167,5 @@ test.txt
 
 .ruff_cache
 .DS_Store
+
+

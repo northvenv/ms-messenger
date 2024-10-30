@@ -2,19 +2,13 @@ from uuid import uuid4
 from datetime import datetime, UTC
 from dataclasses import dataclass
 
-from access_service.application.common.usecase.interactor import Interactor
-from access_service.application.common.repository.user import UserRepository
-from access_service.application.common.services.password_hasher import PasswordHasher
-
 from access_service.domain.entities.access_token import AccessToken
 from access_service.domain.entities.refresh_token import RefreshToken
 from access_service.domain.common.entities.config import (
     AccessTokenConfig,
     RefreshTokenConfig,
 )
-
 from access_service.domain.common.entities.timed_token import TimedTokenMetadata
-
 from access_service.domain.common.values.timed_token import (
     TimedTokenId,
     ExpiresIn,
@@ -24,9 +18,11 @@ from access_service.domain.values.user import (
     UserPhoneNumber,
     UserRawPassword,
 )
+from access_service.application.common.usecase.interactor import Interactor
+from access_service.application.common.gateway.user import UserGateway
+from access_service.application.common.services.password_hasher import PasswordHasher
 from access_service.application.dto.access_token import AccessTokenDTO
 from access_service.application.dto.refresh_token import RefreshTokenDTO
-
 from access_service.application.exceptions.password_hasher import PasswordMismatchError
 from access_service.application.exceptions.user import (
     UserIsNotExistsError,
@@ -49,18 +45,18 @@ class TokensDTO():
 class Authorize(Interactor[AuthorizeInputDTO, TokensDTO]):
     def __init__(
         self,
-        user_repository: UserRepository,
+        user_gateway: UserGateway,
         password_hasher: PasswordHasher,
         access_token_config: AccessTokenConfig,
         refresh_token_config: RefreshTokenConfig
     ):
-        self.user_repository: UserRepository = user_repository
+        self.user_gateway: UserGateway = user_gateway
         self.password_hasher: PasswordHasher[UserRawPassword, UserHashedPassword] = password_hasher
         self.access_token_config: AccessTokenConfig = access_token_config
         self.refresh_token_config: RefreshTokenConfig = refresh_token_config
     
     async def __call__(self, data: AuthorizeInputDTO) -> TokensDTO:
-        user = await self.user_repository.get_with_phone_number(UserPhoneNumber(data.phone_number))
+        user = await self.user_gateway.get_with_phone_number(UserPhoneNumber(data.phone_number))
 
         if not user:
             raise UserIsNotExistsError
