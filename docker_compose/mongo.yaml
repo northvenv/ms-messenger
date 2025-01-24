@@ -1,0 +1,14 @@
+services:
+  mongo:
+    image: mongo
+    container_name: messenger_mongo
+    env_file:
+      - ../.env
+    ports:
+      - "27017:27017"
+    networks:
+      - common_network  
+
+networks:
+  common_network:
+    external: true

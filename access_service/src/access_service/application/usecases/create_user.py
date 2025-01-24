@@ -28,11 +28,11 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
     def __init__(
         self,
         user_gateway: UserGateway,
-        password_hasher: PasswordHasher
+        password_hasher: PasswordHasher,
     ): 
         self.user_gateway: UserGateway = user_gateway
         self.password_hasher: PasswordHasher[UserRawPassword, UserHashedPassword] = password_hasher
-
+    
     async def __call__(self, data: CreateUserInputDTO) -> UserDTO:
         user_id = UserID(uuid4())
         username = UserName(data.username)
@@ -49,8 +49,9 @@ class CreateUser(Interactor[CreateUserInputDTO, UserDTO]):
         )
 
         user_dto = await self.user_gateway.save(user)
-        
+
         return user_dto
+
 
 
 

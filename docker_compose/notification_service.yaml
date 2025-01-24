@@ -1,0 +1,21 @@
+services:
+  notification_service:
+    build: 
+      context: ../notification_service
+      dockerfile: Dockerfile
+    container_name: notification_service
+    command: "poetry run python3 src/notification_service/main.py"
+    env_file:
+      - ../.env
+      - ../.env.notification_service
+    volumes:
+      - ../notification_service/src/:/app/src/
+      - ../.config:/app/.config
+    ports:
+      - "8004:8004"
+    networks:
+      - common_network 
+
+networks:
+  common_network:
+    external: true

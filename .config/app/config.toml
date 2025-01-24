@@ -1,0 +1,18 @@
+[web]
+cors-allow = ['http://localhost:5173']
+
+[security]
+algorithm = 'HS256'
+access-token-expires-minutes = 10
+refresh-token-expires-days = 15
+
+[verification]
+verification-token-expires-minutes = 5
+verification_token_topic = 'verification_token_topic'
+sms_result_topic = 'sms_result_topic'
+
+[auth]
+access-token-key = 'access'
+refresh-token-key = 'refresh'
+
+

@@ -131,6 +131,7 @@ env.bak/
 venv.bak/
 .env.access_service
 .env.notification_service
+.env.message_service
 
 
 # Spyder project settings

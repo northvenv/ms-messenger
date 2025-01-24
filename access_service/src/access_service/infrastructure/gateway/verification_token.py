@@ -1,48 +1,49 @@
 import orjson
-from redis.asyncio import Redis
-from redis.exceptions import RedisError
-from aiokafka import AIOKafkaProducer
-from aiokafka.errors import KafkaError
+from uuid import UUID
+from redis.asyncio import Redis, ConnectionPool
+from typing import NoReturn
+from typing import AsyncGenerator
 
 from access_service.domain.entities.verification_token import VerificationToken
-from access_service.infrastructure.gateway.converters.verification_token import convert_verification_token_entity_to_dict
+
+from access_service.infrastructure.gateway.converters.user import (
+    convert_user_entity_to_db_user,
+    convert_db_user_to_user_entity,
+    convert_db_user_to_dto,
+)
+from access_service.infrastructure.persistence.models.user import DBUser
+from access_service.infrastructure.gateway.converters.verification_token import (
+    convert_verification_token_dto_to_bytes,
+)
+from access_service.application.dto.verification_token import VerificationTokenDTO
+
 
 
 class VerificationTokenGatewayImpl:
     def __init__(
         self,
-        topic: str,
-        producer: AIOKafkaProducer,
-        redis: Redis,
+        session: AsyncGenerator[Redis, None]
     ):
-        self.topic: str = topic
-        self.producer: AIOKafkaProducer = producer
-        self.redis: Redis = redis
+        self.session = session
 
-    async def produce_verification_token(self, data: VerificationToken) -> None:
-        await self.producer.start()
-        try:
-            data_dict = convert_verification_token_entity_to_dict(data)
-            value_bytes = orjson.dumps(data_dict)
-            await self.producer.send(
-                topic=self.topic,
-                value=value_bytes,
+    async def save_verification_token(self, verification_token_dto: VerificationTokenDTO):
+        async for session in self.session:
+            await session.set(
+                name=verification_token_dto.uid,
+                value=convert_verification_token_dto_to_bytes(verification_token_dto)
             )
-        except KafkaError:
-            raise KafkaError
-        finally:
-            await self.producer.stop()
 
-    async def save_verification_token(self, data: VerificationToken) -> None:
-        try:
-            data_dict = convert_verification_token_entity_to_dict(data)
-            token_id_bytes = orjson.dumps(data_dict["token_id"])
-            metadata_bytes = orjson.dumps(data_dict["metadata"])
+    async def get_verification_token(self, uid: str) -> VerificationTokenDTO:
+        async for session in self.session:
+            verification_token = await session.get(name=uid)
+            data = orjson.loads(verification_token)
 
-            await self.redis.set(
-                name=token_id_bytes,
-                value=metadata_bytes,
+            verification_token_dto = VerificationTokenDTO(
+                uid=data["uid"],
+                expires_in=data["expires_in"],
+                code=data["code"],
+                token_id=data["token_id"]
             )
-        except RedisError:
-            raise RedisError
-    
+            return verification_token_dto
+
+            

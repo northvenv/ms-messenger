@@ -1,9 +1,7 @@
-from uuid import uuid4
 from datetime import datetime, UTC
 from dataclasses import dataclass
 
 from access_service.domain.entities.access_token import AccessToken
-from access_service.domain.entities.refresh_token import RefreshToken
 from access_service.domain.common.entities.config import (
     AccessTokenConfig,
     RefreshTokenConfig,
@@ -60,6 +58,8 @@ class Authorize(Interactor[AuthorizeInputDTO, TokensDTO]):
 
         if not user:
             raise UserIsNotExistsError
+        
+        user.verify_is_active()
 
         try:
             self.password_hasher.verify_password(UserRawPassword(data.password), user.hashed_password)
@@ -68,14 +68,19 @@ class Authorize(Interactor[AuthorizeInputDTO, TokensDTO]):
         
         now = datetime.now(tz=UTC)
         access_token_expires_in = ExpiresIn(now + self.access_token_config.expires_after)
+        access_token_metadata = TimedTokenMetadata(
+            uid=user.user_id, 
+            expires_in=access_token_expires_in
+        )
+
         refresh_token_expires_in = ExpiresIn(now + self.refresh_token_config.expires_after)
+        refresh_token_metadata = TimedTokenMetadata(
+            uid=user.user_id, 
+            expires_in=refresh_token_expires_in
+        )
 
-        access_token_metadata = TimedTokenMetadata(uid=user.user_id, expires_in=access_token_expires_in)
-        refresh_token_metadata = TimedTokenMetadata(uid=user.user_id, expires_in=refresh_token_expires_in)
-        token_id = TimedTokenId(uuid4())
-
-        access_token = AccessToken(metadata=access_token_metadata, token_id=token_id)
-        refresh_token = RefreshToken(metadata=refresh_token_metadata, token_id=token_id)
+        access_token = AccessToken(metadata=access_token_metadata)
+        refresh_token = AccessToken(metadata=refresh_token_metadata)
 
         return TokensDTO(
             access_token=AccessTokenDTO(

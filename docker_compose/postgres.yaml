@@ -8,7 +8,12 @@ services:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - common_network 
 
+networks:
+  common_network:
+    external: true
 
 volumes:
   postgres_data:

@@ -2,11 +2,15 @@
 name = "messenger-notification-service"
 version = "0.1.0"
 description = ""
-authors = ["ekwize <ulanovsega@gmail.com>"]
+authors = ["northvenv <ulanovsega@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "3.12.3"
+smsaero-api-async = "^3.0.0"
+aiokafka = "^0.12.0"
+orjson = "^3.10.15"
+dependency-injector = "^4.45.0"
 
 
 [build-system]

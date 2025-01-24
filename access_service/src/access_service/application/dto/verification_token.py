@@ -3,9 +3,10 @@ from datetime import datetime
 from dataclasses import dataclass
 
 
+
 @dataclass(frozen=True)
 class VerificationTokenDTO:
-    uid: UUID
+    uid: str
     expires_in: datetime
     code: int
-    token_id: UUID
+    token_id: str

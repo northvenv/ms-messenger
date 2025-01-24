@@ -1,0 +1,16 @@
+services:
+  nginx:
+    build:
+      context: ../.config/nginx/
+      dockerfile: Dockerfile
+    container_name: messenger_nginx
+    ports:
+      - "80:80"  
+    volumes:
+      - ../.config/nginx/nginx.conf:/etc/nginx/nginx.conf  
+    networks:
+      - common_network   
+
+networks:
+  common_network:
+    external: true

@@ -10,5 +10,12 @@ services:
       - ../.env
     volumes:
       - ../access_service/src/:/app/src/
+      - ../.config:/app/.config
     ports:
       - "8000:8000"
+    networks:
+      - common_network 
+
+networks:
+  common_network:
+    external: true

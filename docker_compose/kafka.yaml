@@ -6,6 +6,8 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - 22181:2181
+    networks:
+      - common_network  
 
   kafka:
     container_name: messenger_kafka
@@ -23,3 +25,9 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     healthcheck: 
       test: nc -z localhost 29092
+    networks:
+      - common_network  
+
+networks:
+  common_network:
+    external: true

@@ -1,11 +1,11 @@
 from uuid import UUID
 from datetime import datetime, UTC
 
-from access_service.infrastructure.services.web_token.jwt_processor import (
+from access_service.infrastructure.web_token.jwt_processor import (
     JWTProcessor,
     JWTToken,
 )
-from access_service.infrastructure.services.web_token.exceptions import (
+from access_service.infrastructure.web_token.exceptions import (
     JWTDecodeError,
     JWTExpiredError,
 )
@@ -34,10 +34,8 @@ class WebTokenProcessor:
 
     def encode(self, token_data: AccessTokenDTO | RefreshTokenDTO) -> JWTToken:
         jwt_token_payload = {
-            "sub": {
-                "uid": str(token_data.uid),
-                "token_id": str(token_data.token_id),
-            },
+            "sub": str(token_data.uid),
+            "token_id": str(token_data.token_id),
             "exp": token_data.expires_in,
         }
         jwt_token = self.jwt_processor.encode(jwt_token_payload)
@@ -51,10 +49,9 @@ class WebTokenProcessor:
     ) -> AccessTokenDTO | RefreshTokenDTO:
         try:
             payload = self.jwt_processor.decode(token)
-            sub = payload["sub"]
 
-            uid = UUID(sub["uid"])
-            token_id = UUID(sub["token_id"])
+            uid = UUID(payload["sub"])
+            token_id = UUID(payload["token_id"])
             expires_in = datetime.fromtimestamp(float(payload["exp"]), UTC)
             
             if token_type == AccessTokenType:

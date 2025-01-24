@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 @dataclass
 class BaseDBConfig:
-
     host: str
     port: int
     db_name: str

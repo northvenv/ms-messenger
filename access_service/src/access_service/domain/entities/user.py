@@ -16,6 +16,10 @@ class User:
     hashed_password: UserHashedPassword
     phone_number: UserPhoneNumber
     is_active: bool = False
+
+    @classmethod
+    def create_user(cls):
+        return cls()
     
     def verify_is_active(self) -> None:
         if not self.is_active:

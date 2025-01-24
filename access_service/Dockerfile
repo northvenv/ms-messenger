@@ -14,8 +14,7 @@ RUN pip3 install poetry
 
 COPY pyproject.toml poetry.lock /app/
 
-RUN poetry install --no-dev
-
+RUN poetry install --no-root
 COPY . /app/
 
 ENV PYTHONPATH=/app/src

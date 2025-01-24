@@ -1,3 +1,5 @@
+import asyncpg
+from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import DBAPIError, IntegrityError
@@ -5,7 +7,10 @@ from sqlalchemy.exc import DBAPIError, IntegrityError
 from typing import NoReturn
 
 from access_service.domain.entities.user import User
-from access_service.domain.values.user import UserPhoneNumber
+from access_service.domain.values.user import (
+    UserPhoneNumber,
+    UserID
+)
 
 from access_service.application.dto.user import UserDTO
 from access_service.application.exceptions.user import UserAlreadyExistsError
@@ -32,11 +37,54 @@ class UserGatewayImpl:
             self.session.add(db_user)
             await self.session.commit()
         except IntegrityError as err:
+            await self.session.rollback()
             self._process_error(err)
             
         await self.session.refresh(db_user)
         
         return convert_db_user_to_dto(db_user)
+    
+    async def activate_user(
+        self,
+        uid: UserID
+    ) -> User | None:
+        user: DBUser | None = await self._get_by_uid(uid.to_raw())
+
+        if user:
+            user.is_active = True
+
+        try:
+            await self.session.commit()
+        except IntegrityError as err:
+            await self.session.rollback()
+            self._process_error(err)
+
+        await self.session.refresh(user)
+
+        return convert_db_user_to_user_entity(user)
+        
+    async def _get_by_uid(
+        self, 
+        uid: UUID
+    ) -> DBUser | None:
+        query = select(DBUser).where(DBUser.user_id == uid)
+
+        result = await self.session.execute(query)
+        user: DBUser | None = result.scalar()
+        
+        return user
+        
+
+    async def get_by_uid(
+        self,
+        uid: UserID
+    ) -> User | None:
+        user = await self._get_by_uid(uid.to_raw())
+
+        if not user:
+            return None
+        
+        return convert_db_user_to_user_entity(user)
     
     async def get_with_phone_number(
         self,

@@ -1,0 +1,38 @@
+services:
+  message_service:
+    build: 
+      context: ../message_service
+      dockerfile: Dockerfile
+    container_name: message_service
+    command: "poetry run uvicorn --factory message_service.presentation.rest.main:create_app --reload --host 0.0.0.0 --port 8001"
+    env_file:
+      - ../.env.message_service
+      - ../.env
+    volumes:
+      - ../message_service/src/:/app/src/
+      - ../.config:/app/.config
+    ports:
+      - "8001:8001"
+    networks:
+      - common_network  
+    
+  ws_message_service:
+    build: 
+      context: ../message_service
+      dockerfile: Dockerfile
+    container_name: ws_message_service
+    command: "poetry run uvicorn --factory message_service.presentation.websocket.main:create_socket_app --reload --host 0.0.0.0 --port 8002"
+    env_file:
+      - ../.env.message_service
+      - ../.env
+    volumes:
+      - ../message_service/src/:/app/src/
+      - ../.config:/app/.config
+    ports:
+      - "8002:8002"
+    networks:
+      - common_network  
+
+networks:
+  common_network:
+    external: true

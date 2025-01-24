@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class TokenAuthConfig:
     access_token_cookie_key: str

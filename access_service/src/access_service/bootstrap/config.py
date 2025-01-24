@@ -1,11 +1,11 @@
 import os
 import tomllib
-from pathlib import Path
-from typing import Any
 import logging
-
-from dataclasses import dataclass
+from typing import Any
+from pathlib import Path
 from datetime import timedelta
+from dataclasses import dataclass
+
 
 from access_service.infrastructure.persistence.config import DBConfig
 from access_service.domain.common.entities.config import (
@@ -13,10 +13,10 @@ from access_service.domain.common.entities.config import (
     RefreshTokenConfig,
     VerificationTokenConfig
 )
-from access_service.infrastructure.services.web_token.config import JWTConfig
+from access_service.infrastructure.web_token.config import JWTConfig
 from access_service.presentation.auth.config import TokenAuthConfig
 from access_service.infrastructure.cache.config import RedisConfig
-from access_service.infrastructure.producer.config import KafkaConfig
+from access_service.infrastructure.message_broker.config import KafkaConfig
 
 
 def load_config_by_path(config_path: Path) -> dict[str, Any]:
@@ -55,7 +55,11 @@ def load_access_service_config() -> AccessServiceConfig:
         jwt_algorithm = cfg["security"]["algorithm"]
         access_token_expires_after = cfg["security"]["access-token-expires-minutes"]
         refresh_token_expires_after = cfg["security"]["refresh-token-expires-days"]
+
         verification_token_expires_after = cfg["verification"]["verification-token-expires-minutes"]
+        verification_token_topic = cfg["verification"]["verification_token_topic"]
+        sms_result_topic = cfg["verification"]["sms_result_topic"]
+
     except KeyError:
         logging.fatal("On startup: Error reading config %s", cfg_path)
         raise
@@ -83,7 +87,9 @@ def load_access_service_config() -> AccessServiceConfig:
         port=int(os.environ["REDIS_PORT"])
     )
     kafka = KafkaConfig(
-        kafka_url=os.environ["KAFKA_URL"]
+        url=os.environ["KAFKA_URL"],
+        verification_token_topic=verification_token_topic,
+        sms_result_topic=sms_result_topic
     )
 
     return AccessServiceConfig(

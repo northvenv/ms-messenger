@@ -20,13 +20,16 @@ from access_service.application.dto.user import UserDTO
 from access_service.presentation.schemas.user import (
     CreateUserSchema,
     LoginSchema,
+    SendVerificationSchema,
+    VerificationSchema
 )
-from access_service.presentation.auth.token_auth import TokenAuth
+from access_service.presentation.auth.token_auth import TokenAuthGateway
 
 from access_service.bootstrap.di import (
     ApplicationContainer,
     PresentationContainer,
 )
+from access_service.application.usecases.verify_user import VerifyUser, VerificationInputDTO
 
 
 router = APIRouter(
@@ -40,7 +43,6 @@ router = APIRouter(
 async def create_user(
     data: CreateUserSchema,
     create_user: CreateUser = Depends(Provide[ApplicationContainer.create_user]),
-    send_verification_token: SendVerificationToken = Depends(Provide[ApplicationContainer.send_verification_token])
 ) -> UserDTO:
     response = await create_user(
         CreateUserInputDTO(
@@ -48,11 +50,6 @@ async def create_user(
             phone_number=data.phone_number,
             password=data.password,
         ),
-    )
-    await send_verification_token(
-        SendVerificationTokenInputDTO(
-            user_id=response.user_id,
-        )
     )
     return response
 
@@ -62,7 +59,7 @@ async def create_user(
 async def login_user(
     data: LoginSchema,
     auth_action: Authorize = Depends(Provide[ApplicationContainer.authorize]),
-    token_auth: TokenAuth = Depends(Provide[PresentationContainer.token_auth])
+    token_auth: TokenAuthGateway = Depends(Provide[PresentationContainer.token_auth])
 ) -> Response:
     web_tokens = await auth_action(
         AuthorizeInputDTO(
@@ -79,23 +76,36 @@ async def login_user(
     )
 
 
-@router.post("/refresh")
+@router.post("/send_verification_token")
 @inject
-async def refresh_token(
-    request: Request,
-    update_access_token: UpdateAccessToken = Depends(Provide[ApplicationContainer.update_access_token]),
-    token_auth: TokenAuth = Depends(Provide[PresentationContainer.token_auth]),
-) -> Response:
-    refresh_token = token_auth.get_refresh_token(request)
-
-    access_token = await update_access_token(refresh_token)
-
-    http_response = JSONResponse(status_code=201, content={})
-
-    return token_auth.set_access_token(
-        access_token_data=access_token,
-        response=http_response,
+async def send_verification_token(
+    data: SendVerificationSchema,
+    send_verification_token: SendVerificationToken = Depends(Provide[ApplicationContainer.send_verification_token])
+):
+    await send_verification_token(
+        SendVerificationTokenInputDTO(
+            user_id=data.uid,
+            phone_number=data.phone_number
+        )
     )
+
+@router.post("/verify")
+@inject
+async def verify_user(
+    data: VerificationSchema,
+    verify_user: VerifyUser = Depends(Provide[ApplicationContainer.verify_user])
+):
+    await verify_user(
+        VerificationInputDTO(
+            uid=data.uid,
+            code=data.code
+        )
+    )
+
+
+
+
+
     
 
    

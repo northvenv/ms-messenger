@@ -1,6 +1,5 @@
 from fastapi import Response, Request
 
-
 from access_service.infrastructure.services.auth.web_token_processor import (
     WebTokenProcessor,
     AccessTokenType,
@@ -11,7 +10,7 @@ from access_service.application.dto.refresh_token import RefreshTokenDTO
 from access_service.presentation.auth.config import TokenAuthConfig
 
 
-class TokenAuth:
+class TokenAuthGateway:
     def __init__(
         self,
         token_processor: WebTokenProcessor,

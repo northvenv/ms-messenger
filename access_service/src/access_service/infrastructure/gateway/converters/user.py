@@ -1,7 +1,7 @@
 from access_service.domain.entities.user import User
 from access_service.infrastructure.persistence.models.user import DBUser
 from access_service.application.dto.user import UserDTO
-
+from uuid import UUID
 from access_service.domain.values.user import (
     UserID,
     UserName,
@@ -30,7 +30,8 @@ def convert_db_user_to_user_entity(db_user: DBUser) -> User:
 
 def convert_db_user_to_dto(db_user: DBUser) -> UserDTO:
     return UserDTO(
-        user_id=db_user.user_id,
+        user_id=UUID(str(db_user.user_id)),
+        phone_number=db_user.phone_number
     )
 
 

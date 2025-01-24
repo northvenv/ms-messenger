@@ -31,6 +31,7 @@ async def get_async_sessionmaker(
 
     return session_factory
 
+
 async def get_async_session(
     session_factory: async_sessionmaker[AsyncSession],
 ) -> AsyncIterable[AsyncSession]:

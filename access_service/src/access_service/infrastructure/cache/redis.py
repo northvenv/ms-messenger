@@ -12,10 +12,8 @@ def get_redis_pool(settings: RedisConfig) -> ConnectionPool:
 async def get_redis_session(pool: ConnectionPool) -> AsyncGenerator[Redis, None]:
     session = Redis.from_pool(pool)
 
-    yield session
-
-    await session.aclose()
-
+    async with session:
+        yield session
 
 
 

@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "messenger-message-service"
+version = "0.1.0"
+description = ""
+authors = ["northvenv <ulanovsega@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+motor = "^3.6.0"
+fastapi = "^0.115.4"
+uvicorn = "^0.32.0"
+dependency-injector = "^4.43.0"
+python-socketio = { version = "^5.11.4", extras = ["asyncio"] }
+pyjwt = "^2.9.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
