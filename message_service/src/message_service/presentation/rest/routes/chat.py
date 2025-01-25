@@ -22,7 +22,10 @@ from message_service.presentation.schemas.chat import (
 )
 
 
-router = APIRouter(prefix="/chat")
+router = APIRouter(
+    prefix="/chat",
+    tags=["Chat"],
+)
 
 
 @router.post("/create", response_model=None)

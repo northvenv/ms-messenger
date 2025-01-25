@@ -33,8 +33,8 @@ from access_service.application.usecases.verify_user import VerifyUser, Verifica
 
 
 router = APIRouter(
-    prefix="/auth",
-    tags=["Auth"],
+    prefix="/user",
+    tags=["User"],
 )
 
 

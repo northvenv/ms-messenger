@@ -13,7 +13,10 @@ from message_service.presentation.schemas.message import (
 )
 
 
-router = APIRouter(prefix="/message")
+router = APIRouter(
+    prefix="/message",
+    tags=["Message"],
+)
 
 
 @router.post("/send")

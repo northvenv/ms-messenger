@@ -14,7 +14,7 @@ RUN pip3 install poetry
 
 COPY pyproject.toml poetry.lock /app/
 
-RUN poetry install --only main
+RUN poetry install --no-root
 
 COPY . /app/
 
