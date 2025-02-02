@@ -4,6 +4,7 @@ services:
     container_name: messenger_mongo
     env_file:
       - ../.env
+      - ../.env.message_service
     ports:
       - "27017:27017"
     networks:

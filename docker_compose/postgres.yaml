@@ -4,6 +4,7 @@ services:
     image: postgres:alpine
     env_file:
       - ../.env
+      - ../.env.access_service
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
